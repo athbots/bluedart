@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: transit_postgres
+    environment:
+      POSTGRES_DB: smart_transit
+      POSTGRES_USER: transit_user
+      POSTGRES_PASSWORD: transit_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transit_user -d smart_transit"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: transit_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: transit_mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./infra/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.api
+    container_name: transit_api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://transit_user:transit_secure_password_2026@postgres:5432/smart_transit
+      - REDIS_URL=redis://redis:6379/0
+      - MQTT_BROKER_HOST=mosquitto
+      - ENVIRONMENT=production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  simulator:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.simulator
+    container_name: transit_simulator
+    environment:
+      - API_BASE_URL=http://api:8000/api/v1
+    depends_on:
+      - api
+
+  dashboard:
+    build:
+      context: ./apps/admin_dashboard
+      dockerfile: ../../infra/docker/Dockerfile.dashboard
+    container_name: transit_dashboard
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:

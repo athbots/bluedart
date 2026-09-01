@@ -1,0 +1,6 @@
+{
+  "model_type": "GradientBoostingRegressor",
+  "model_version": "v1.1.0-gbr",
+  "mean_absolute_error_seconds": 44.57,
+  "root_mean_squared_error_seconds": 66.75
+}
