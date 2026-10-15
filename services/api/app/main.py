@@ -1,5 +1,5 @@
 """
-Smart Transit Intelligence System — FastAPI Application Entry Point.
+YatriQ — FastAPI Application Entry Point.
 Production-ready transit backend with REST endpoints, WebSockets, and health checks.
 """
 
@@ -23,22 +23,22 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
-logger = logging.getLogger("transit_api")
+logger = logging.getLogger("yatriq_api")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing Smart Transit Backend...")
+    logger.info("Initializing YatriQ Transit Backend...")
     init_db()
     logger.info("Database tables initialized successfully.")
     yield
-    logger.info("Shutting down Smart Transit Backend.")
+    logger.info("Shutting down YatriQ Transit Backend.")
 
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Smart Transit Intelligence System API for Indian Public Transport (Know Your Bus Before It Arrives)",
+    description="YatriQ Transit Intelligence API for Indian Public Transport (Know Your Bus Before It Arrives)",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",

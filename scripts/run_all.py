@@ -1,5 +1,5 @@
 """
-Unified Launcher for Smart Transit Intelligence System.
+Unified Launcher for YatriQ.
 Starts the FastAPI Backend, Database Seeding, ML Predictor, Fleet Physics Simulator, and Edge Agent in a single process.
 """
 
@@ -22,7 +22,7 @@ logger = logging.getLogger("unified_launcher")
 
 async def main():
     print("=" * 70)
-    print("   SMART TRANSIT INTELLIGENCE SYSTEM — INDIA")
+    print("   YATRIQ — AUTONOMOUS TRANSIT INTELLIGENCE")
     print("   'Know Your Bus Before It Arrives'")
     print("=" * 70)
 

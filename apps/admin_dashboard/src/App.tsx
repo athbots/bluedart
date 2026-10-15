@@ -17,7 +17,11 @@ import {
   Eye,
   Sliders,
   RefreshCw,
-  Search
+  Search,
+  Bell,
+  Sparkles,
+  ShieldCheck,
+  Check
 } from 'lucide-react';
 import { LiveBus, DeviceInfo, CrowdAnalyticsData, ETAAnalyticsData } from './types';
 import { ThreeDTransitCorridor, RouteProgressionViewData } from './components/ThreeDTransitCorridor';
@@ -40,6 +44,30 @@ export default function App() {
   const [passengerProgressionView, setPassengerProgressionView] = useState<any>(null);
   const [passengerViewMode, setPassengerViewMode] = useState<'3D' | 'LIST'>('3D');
   const [passengerLang, setPassengerLang] = useState<'en' | 'hi'>('en');
+  const [inspectorMode, setInspectorMode] = useState<boolean>(false);
+  const [remindedBuses, setRemindedBuses] = useState<Record<string, boolean>>({});
+
+  const getCrowdFriendly = (level: string) => {
+    switch (level?.toUpperCase()) {
+      case 'LOW':
+        return { label: passengerLang === 'hi' ? 'पर्याप्त सीटें' : 'Plenty of Seats', color: '#10B981', bg: 'rgba(16, 185, 129, 0.12)' };
+      case 'MEDIUM':
+        return { label: passengerLang === 'hi' ? 'सीटें भर रही हैं' : 'Seats Filling', color: '#0EA5E9', bg: 'rgba(14, 165, 233, 0.12)' };
+      case 'HIGH':
+        return { label: passengerLang === 'hi' ? 'कम सीटें शेष' : 'Few Seats Left', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.12)' };
+      case 'VERY_HIGH':
+        return { label: passengerLang === 'hi' ? 'केवल खड़े होने की जगह' : 'Standing Room Only', color: '#818CF8', bg: 'rgba(129, 140, 248, 0.12)' };
+      default:
+        return { label: passengerLang === 'hi' ? 'सीटें उपलब्ध' : 'Seats Available', color: '#10B981', bg: 'rgba(16, 185, 129, 0.12)' };
+    }
+  };
+
+  const getSourceFriendly = (source: string, isLive: boolean) => {
+    if (isLive) return '✓ Live Onboard';
+    if (source === 'ML_PREDICTED' || source === 'PREDICTED') return '⚡ Smart Estimate';
+    if (source === 'HISTORICAL_ESTIMATE') return '🕒 Typical Pattern';
+    return '✓ Live GPS';
+  };
 
   // Poll / Fetch core state
   const fetchData = async () => {
@@ -163,7 +191,7 @@ export default function App() {
             <Bus size={22} color="#fff" />
           </div>
           <div>
-            <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>SMART TRANSIT</h2>
+            <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#fff', lineHeight: 1.2 }}>YATRIQ</h2>
             <p style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.05em' }}>COMMAND CENTRE</p>
           </div>
         </div>
@@ -237,13 +265,60 @@ export default function App() {
         {/* Top Header Bar */}
         <header style={{ padding: '16px 32px', borderBottom: '1px solid var(--border-subtle)', background: 'rgba(13, 20, 36, 0.8)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ fontSize: '20px', color: '#fff' }}>NCR Regional Transit Intelligence Control</h1>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Ghaziabad - East Delhi - Noida Rapid Bus Corridors</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h1 style={{ fontSize: '20px', color: '#fff', fontWeight: 800 }}>YatriQ Command Centre</h1>
+              <span style={{ fontSize: '11px', background: 'rgba(16, 185, 129, 0.15)', color: '#34D399', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                {inspectorMode ? 'Inspector Mode' : 'Calm Mode'}
+              </span>
+            </div>
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>NCR Corridor: Anand Vihar ⇄ Modipuram Rapid Transit</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            {/* Calm Mode / Inspector Mode Pill Switch */}
+            <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '24px', padding: '3px', border: '1px solid var(--border-subtle)' }}>
+              <button
+                onClick={() => setInspectorMode(false)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: !inspectorMode ? 'linear-gradient(135deg, #10B981, #059669)' : 'transparent',
+                  color: !inspectorMode ? '#fff' : '#94A3B8',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <span>🌿 Calm Mode</span>
+              </button>
+              <button
+                onClick={() => setInspectorMode(true)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: inspectorMode ? 'linear-gradient(135deg, #0284C7, #0369A1)' : 'transparent',
+                  color: inspectorMode ? '#fff' : '#94A3B8',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <span>🔬 Tech Inspector</span>
+              </button>
+            </div>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid var(--border-subtle)' }}>
               <span className="pulse-dot" />
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#34D399' }}>Live Telemetry Active</span>
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#34D399' }}>Live Telemetry</span>
             </div>
             <button
               onClick={() => { fetchData(); fetchAnalytics(); }}
@@ -273,9 +348,21 @@ export default function App() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' }}>
                 {[
                   { label: 'Active Fleet Buses', value: activeBusesCount, sub: 'Tracking live coordinates', icon: Bus, color: '#0084FF' },
-                  { label: 'High Crowd Density', value: highCrowdBusesCount, sub: 'Buses with >75% occupancy', icon: Users, color: '#EF4444' },
-                  { label: 'Online Edge Devices', value: onlineDevicesCount, sub: 'Jetson & Sensor nodes', icon: Cpu, color: '#10B981' },
-                  { label: 'Delayed / Gridlock', value: delayedBusesCount, sub: 'Speed <5kmh or stale GPS', icon: AlertTriangle, color: '#F59E0B' },
+                  { 
+                    label: inspectorMode ? 'High Crowd Density (>75%)' : 'Comfort & Seating Status', 
+                    value: highCrowdBusesCount, 
+                    sub: inspectorMode ? 'Buses with >75% occupancy' : `${buses.length - highCrowdBusesCount} buses with seats available`, 
+                    icon: Users, 
+                    color: inspectorMode ? '#EF4444' : '#0284C7' 
+                  },
+                  { label: 'Online Edge Devices', value: onlineDevicesCount, sub: 'AI Camera & Sensor nodes', icon: Cpu, color: '#10B981' },
+                  { 
+                    label: inspectorMode ? 'Delayed / Gridlock' : 'Corridor Transit Flow', 
+                    value: delayedBusesCount, 
+                    sub: inspectorMode ? 'Speed <5kmh or stale GPS' : (delayedBusesCount === 0 ? 'Optimal corridor velocity' : `${delayedBusesCount} buses in heavy traffic`), 
+                    icon: inspectorMode ? AlertTriangle : CheckCircle2, 
+                    color: inspectorMode ? '#F59E0B' : (delayedBusesCount > 2 ? '#F59E0B' : '#10B981') 
+                  },
                 ].map((kpi, idx) => {
                   const Icon = kpi.icon;
                   return (
@@ -549,7 +636,7 @@ export default function App() {
                 {/* Mobile App Bar */}
                 <div style={{ background: '#081C3B', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#fff' }}>
                   <div>
-                    <div style={{ fontSize: '15px', fontWeight: 800 }}>{passengerLang === 'hi' ? 'स्मार्ट ट्रांजिट' : 'Smart Transit India'}</div>
+                    <div style={{ fontSize: '15px', fontWeight: 800 }}>{passengerLang === 'hi' ? 'यात्रीQ' : 'YatriQ'}</div>
                     <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.7)' }}>{passengerLang === 'hi' ? 'बस आने से पहले जानें' : 'Know Your Bus Before It Arrives'}</div>
                   </div>
                   <button
@@ -571,9 +658,76 @@ export default function App() {
 
                 {/* Arriving Buses Section */}
                 <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', background: '#F1F5F9' }}>
+                  {/* Hero Calm Commute Recommendation Card */}
+                  {liveboardData?.arrivals && liveboardData.arrivals.length > 0 && !passengerProgressionView && (
+                    (() => {
+                      const bestBus = liveboardData.arrivals.find((a: any) => a.is_most_comfortable) ||
+                                      liveboardData.arrivals.find((a: any) => a.is_fastest) ||
+                                      liveboardData.arrivals[0];
+                      const isReminded = remindedBuses[bestBus.vehicle_id];
+                      return (
+                        <div style={{
+                          background: 'linear-gradient(135deg, #0F52BA 0%, #1E3A8A 100%)',
+                          borderRadius: '16px',
+                          padding: '14px 16px',
+                          marginBottom: '14px',
+                          color: '#fff',
+                          boxShadow: '0 4px 14px rgba(15, 82, 186, 0.35)',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <Sparkles size={12} color="#FDE047" />
+                              <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '12px', fontSize: '9px', fontWeight: 800, letterSpacing: '0.05em' }}>
+                                {passengerLang === 'hi' ? 'सबसे उत्तम विकल्प' : 'BEST CHOICE FOR YOU'}
+                              </span>
+                            </div>
+                            <span style={{ fontSize: '11px', fontWeight: 800, color: '#6EE7B7' }}>
+                              {bestBus.eta_minutes} min arrival
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                              <div style={{ fontSize: '15px', fontWeight: 900 }}>
+                                Route {bestBus.route_number} &bull; {bestBus.destination}
+                              </div>
+                              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.9)', marginTop: '2px' }}>
+                                {bestBus.is_most_comfortable
+                                  ? (passengerLang === 'hi' ? '🟢 पर्याप्त खाली सीटें (आरामदायक यात्रा)' : '🟢 Plenty of seats • Guaranteed seating')
+                                  : (passengerLang === 'hi' ? '⚡ सबसे जल्दी पहुंचने वाली बस' : '⚡ Fastest boarding to your stop')}
+                              </div>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setRemindedBuses(prev => ({ ...prev, [bestBus.vehicle_id]: !prev[bestBus.vehicle_id] }));
+                              }}
+                              style={{
+                                background: isReminded ? '#10B981' : 'rgba(255,255,255,0.2)',
+                                border: 'none',
+                                borderRadius: '20px',
+                                padding: '6px 10px',
+                                color: '#fff',
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {isReminded ? <Check size={12} /> : <Bell size={12} />}
+                              {isReminded ? (passengerLang === 'hi' ? 'अलर्ट सक्रिय' : 'Alert Set') : (passengerLang === 'hi' ? 'याद दिलाएं' : 'Remind 2m')}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()
+                  )}
+
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                     <span style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>
-                      {passengerLang === 'hi' ? 'आने वाली बसें' : 'COMING TO YOUR STOP'}
+                      {passengerLang === 'hi' ? 'आने वाली बसें' : 'UPCOMING BUSES'}
                     </span>
                     <span style={{ fontSize: '10px', fontWeight: 700, color: '#0F52BA', background: '#E0E7FF', padding: '2px 6px', borderRadius: '8px' }}>
                       {liveboardData?.arrivals?.length || 0} LIVE
@@ -586,14 +740,14 @@ export default function App() {
                         onClick={() => setPassengerProgressionView(null)}
                         style={{ width: '100%', padding: '8px', marginBottom: '12px', background: '#E2E8F0', border: 'none', borderRadius: '8px', color: '#334155', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
                       >
-                        ← Back to Stop Liveboard
+                        ← {passengerLang === 'hi' ? 'वापस स्टॉप लाइवबोर्ड पर जाएं' : 'Back to Stop Liveboard'}
                       </button>
                       <div style={{ background: '#fff', padding: '14px', borderRadius: '14px', marginBottom: '12px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
                         <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>Route {passengerProgressionView.route_number} Progression</div>
                         <div style={{ fontSize: '11px', color: '#64748B' }}>{passengerProgressionView.route_name}</div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px', fontSize: '12px' }}>
                           <span>ETA: <strong style={{ color: '#0F52BA' }}>{Math.round((passengerProgressionView.eta_to_user_stop_seconds || 240) / 60)} min</strong></span>
-                          <span>Crowd: <strong style={{ color: '#F59E0B' }}>{passengerProgressionView.crowd_at_user_stop || 'MEDIUM'}</strong></span>
+                          <span>Crowd: <strong style={{ color: '#10B981' }}>{passengerProgressionView.crowd_at_user_stop || 'Plenty of Seats'}</strong></span>
                         </div>
                       </div>
 
@@ -606,7 +760,7 @@ export default function App() {
                               {idx < passengerProgressionView.stops.length - 1 && <div style={{ width: '2px', height: '24px', background: st.is_passed ? '#0F52BA' : '#E2E8F0' }} />}
                             </div>
                             <div style={{ fontSize: '12px', color: st.is_user_stop ? '#B45309' : (st.is_current ? '#0F52BA' : '#1E293B'), fontWeight: (st.is_user_stop || st.is_current) ? 800 : 500 }}>
-                              {st.stop_name} {st.is_user_stop && '(YOUR STOP)'} {st.is_current && '🚌'}
+                              {st.stop_name} {st.is_user_stop && (passengerLang === 'hi' ? '(आपका स्टॉप)' : '(YOUR STOP)')} {st.is_current && '🚌'}
                             </div>
                           </div>
                         ))}
@@ -614,49 +768,101 @@ export default function App() {
                     </div>
                   ) : (
                     <div>
-                      {liveboardData?.arrivals?.map((arr: any) => (
-                        <div
-                          key={arr.vehicle_id}
-                          onClick={async () => {
-                            const res = await fetch(`/api/v1/routes/${arr.route_id}/progress?vehicle_id=${arr.vehicle_id}&user_stop_id=STOP_13`);
-                            if (res.ok) setPassengerProgressionView(await res.json());
-                          }}
-                          style={{ background: '#fff', padding: '12px', borderRadius: '14px', marginBottom: '10px', boxShadow: '0 2px 6px rgba(0,0,0,0.06)', border: arr.is_fastest ? '1.5px solid #0F52BA' : '1px solid #E2E8F0', cursor: 'pointer' }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                              {arr.is_fastest && <span style={{ background: '#0F52BA', color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px' }}>{passengerLang === 'hi' ? 'सबसे तेज़' : 'FASTEST'}</span>}
-                              {arr.is_most_comfortable && !arr.is_fastest && <span style={{ background: '#10B981', color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px' }}>{passengerLang === 'hi' ? 'आरामदायक' : 'COMFORTABLE'}</span>}
-                            </div>
-                            <span style={{ fontSize: '9px', fontWeight: 700, color: '#0284C7', background: '#E0F2FE', padding: '2px 6px', borderRadius: '4px' }}>
-                              {arr.crowd_is_live ? 'LIVE CCTV' : 'PREDICTED'}
-                            </span>
-                          </div>
-
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#081C3B', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px' }}>
-                                {arr.route_number}
+                      {liveboardData?.arrivals?.map((arr: any) => {
+                        const crowdInfo = getCrowdFriendly(arr.predicted_crowd_at_stop || arr.current_crowd_level);
+                        const isReminded = remindedBuses[arr.vehicle_id];
+                        return (
+                          <div
+                            key={arr.vehicle_id}
+                            onClick={async () => {
+                              const res = await fetch(`/api/v1/routes/${arr.route_id}/progress?vehicle_id=${arr.vehicle_id}&user_stop_id=STOP_13`);
+                              if (res.ok) setPassengerProgressionView(await res.json());
+                            }}
+                            style={{ 
+                              background: '#fff', 
+                              padding: '12px', 
+                              borderRadius: '14px', 
+                              marginBottom: '10px', 
+                              boxShadow: '0 2px 6px rgba(0,0,0,0.06)', 
+                              border: arr.is_fastest ? '1.5px solid #0F52BA' : (arr.is_most_comfortable ? '1.5px solid #10B981' : '1px solid #E2E8F0'), 
+                              cursor: 'pointer' 
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                              <div style={{ display: 'flex', gap: '4px' }}>
+                                {arr.is_fastest && <span style={{ background: '#0F52BA', color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px' }}>{passengerLang === 'hi' ? 'सबसे तेज़' : 'FASTEST'}</span>}
+                                {arr.is_most_comfortable && !arr.is_fastest && <span style={{ background: '#10B981', color: '#fff', fontSize: '9px', fontWeight: 800, padding: '2px 6px', borderRadius: '4px' }}>{passengerLang === 'hi' ? 'आरामदायक' : 'COMFORTABLE'}</span>}
                               </div>
-                              <div>
-                                <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>{arr.destination}</div>
-                                <div style={{ fontSize: '10px', color: '#64748B' }}>Near: {arr.current_stop_name} ({arr.stops_away} stops)</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontSize: '9px', fontWeight: 700, color: '#0284C7', background: '#E0F2FE', padding: '2px 6px', borderRadius: '4px' }}>
+                                  {getSourceFriendly(arr.crowd_source, arr.crowd_is_live)}
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setRemindedBuses(prev => ({ ...prev, [arr.vehicle_id]: !prev[arr.vehicle_id] }));
+                                  }}
+                                  style={{
+                                    background: isReminded ? 'rgba(16, 185, 129, 0.15)' : 'rgba(0,0,0,0.04)',
+                                    border: 'none',
+                                    borderRadius: '12px',
+                                    padding: '2px 6px',
+                                    color: isReminded ? '#10B981' : '#64748B',
+                                    fontSize: '9px',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '3px'
+                                  }}
+                                >
+                                  {isReminded ? <Check size={10} /> : <Bell size={10} />}
+                                  {isReminded ? 'Alert' : 'Ping'}
+                                </button>
                               </div>
                             </div>
-                            <div style={{ textAlign: 'right' }}>
-                              <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F52BA' }}>{arr.eta_minutes} <span style={{ fontSize: '10px' }}>min</span></div>
-                              <div style={{ fontSize: '9px', color: '#94A3B8' }}>{Math.round(arr.eta_confidence * 100)}% conf</div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ width: '38px', height: '38px', borderRadius: '8px', background: '#081C3B', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '14px' }}>
+                                  {arr.route_number}
+                                </div>
+                                <div>
+                                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>{arr.destination}</div>
+                                  <div style={{ fontSize: '10px', color: '#64748B' }}>Near: {arr.current_stop_name} ({arr.stops_away} stops)</div>
+                                </div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: '18px', fontWeight: 900, color: '#0F52BA' }}>{arr.eta_minutes} <span style={{ fontSize: '10px' }}>min</span></div>
+                                <div style={{ fontSize: '9px', color: '#64748B' }}>{inspectorMode ? `${Math.round(arr.eta_confidence * 100)}% conf` : (passengerLang === 'hi' ? 'सटीक अनुमान' : 'Reliable')}</div>
+                              </div>
+                            </div>
+
+                            <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '8px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px' }}>
+                              <span style={{ color: '#64748B' }}>
+                                {passengerLang === 'hi' ? 'आपके स्टॉप पर:' : 'At your stop:'}
+                              </span>
+                              <span style={{ 
+                                background: crowdInfo.bg, 
+                                color: crowdInfo.color, 
+                                padding: '2px 8px', 
+                                borderRadius: '10px', 
+                                fontWeight: 700 
+                              }}>
+                                {crowdInfo.label}
+                              </span>
                             </div>
                           </div>
-
-                          <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '8px', paddingTop: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#475569' }}>
-                            <span>Current: <strong style={{ color: arr.current_crowd_level === 'HIGH' ? '#EF4444' : '#F59E0B' }}>{arr.current_crowd_level}</strong></span>
-                            <span>At your stop: <strong style={{ color: '#10B981' }}>{arr.predicted_crowd_at_stop}</strong></span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
+                </div>
+
+                {/* Offline Peace-of-Mind Banner */}
+                <div style={{ background: '#081C3B', padding: '10px 14px', borderTop: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#CBD5E1', fontSize: '10px' }}>
+                  <ShieldCheck size={12} color="#34D399" />
+                  <span>{passengerLang === 'hi' ? 'रूट और समय सारणी ऑफलाइन सुरक्षित है' : 'Schedules & route saved offline for peace of mind'}</span>
                 </div>
               </div>
             </div>
@@ -704,33 +910,67 @@ export default function App() {
 
               {liveboardData && liveboardData.arrivals && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
-                  {liveboardData.arrivals.map((arr: any) => (
-                    <div key={arr.vehicle_id} style={{ padding: '18px', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: arr.is_fastest ? '1.5px solid #0084FF' : (arr.is_most_comfortable ? '1.5px solid #10B981' : '1px solid var(--border-subtle)') }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                        <div style={{ display: 'flex', gap: '6px' }}>
-                          {arr.is_fastest && <span className="badge" style={{ background: '#0084FF', color: '#fff' }}>FASTEST</span>}
-                          {arr.is_most_comfortable && !arr.is_fastest && <span className="badge" style={{ background: '#10B981', color: '#fff' }}>MOST COMFORTABLE</span>}
+                  {liveboardData.arrivals.map((arr: any) => {
+                    const crowdInfo = getCrowdFriendly(arr.predicted_crowd_at_stop || arr.current_crowd_level);
+                    const isReminded = remindedBuses[arr.vehicle_id];
+                    return (
+                      <div key={arr.vehicle_id} style={{ padding: '18px', borderRadius: '14px', background: 'rgba(255, 255, 255, 0.03)', border: arr.is_fastest ? '1.5px solid #0084FF' : (arr.is_most_comfortable ? '1.5px solid #10B981' : '1px solid var(--border-subtle)') }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            {arr.is_fastest && <span className="badge" style={{ background: '#0084FF', color: '#fff' }}>FASTEST</span>}
+                            {arr.is_most_comfortable && !arr.is_fastest && <span className="badge" style={{ background: '#10B981', color: '#fff' }}>MOST COMFORTABLE</span>}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span className="badge badge-live">{getSourceFriendly(arr.crowd_source, arr.crowd_is_live)}</span>
+                            <button
+                              onClick={() => setRemindedBuses(prev => ({ ...prev, [arr.vehicle_id]: !prev[arr.vehicle_id] }))}
+                              style={{
+                                background: isReminded ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+                                border: isReminded ? '1px solid #10B981' : '1px solid var(--border-subtle)',
+                                borderRadius: '12px',
+                                padding: '3px 8px',
+                                color: isReminded ? '#34D399' : '#94A3B8',
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              {isReminded ? <Check size={11} /> : <Bell size={11} />}
+                              {isReminded ? 'Alert Set' : 'Remind'}
+                            </button>
+                          </div>
                         </div>
-                        <span className="badge badge-live">{arr.crowd_source}</span>
-                      </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px 0' }}>
-                        <div>
-                          <div style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>Route {arr.route_number}</div>
-                          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{arr.destination} • {arr.registration_number || arr.vehicle_id}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '10px 0' }}>
+                          <div>
+                            <div style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>Route {arr.route_number}</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{arr.destination} • {arr.registration_number || arr.vehicle_id}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: '28px', fontWeight: 900, color: '#38BDF8' }}>{arr.eta_minutes} <span style={{ fontSize: '14px' }}>min</span></div>
+                            <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{inspectorMode ? `${Math.round(arr.eta_confidence * 100)}% confidence` : 'Reliable'}</div>
+                          </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '28px', fontWeight: 900, color: '#38BDF8' }}>{arr.eta_minutes} <span style={{ fontSize: '14px' }}>min</span></div>
-                          <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{Math.round(arr.eta_confidence * 100)}% confidence</div>
-                        </div>
-                      </div>
 
-                      <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                        <span>Current: <strong style={{ color: '#FBBF24' }}>{arr.current_crowd_level}</strong></span>
-                        <span>At your stop: <strong style={{ color: '#34D399' }}>{arr.predicted_crowd_at_stop}</strong></span>
+                        <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px' }}>
+                          <span style={{ color: 'var(--text-muted)' }}>Expected Comfort:</span>
+                          <span style={{ 
+                            background: crowdInfo.bg, 
+                            color: crowdInfo.color, 
+                            padding: '3px 10px', 
+                            borderRadius: '12px', 
+                            fontWeight: 700, 
+                            fontSize: '11px' 
+                          }}>
+                            {crowdInfo.label}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

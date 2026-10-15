@@ -159,9 +159,24 @@ class ArrivalCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Text(
-                        '${(arrival.etaConfidence * 100).toInt()}% conf',
-                        style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            arrival.crowdIsLive ? Icons.verified : Icons.auto_awesome,
+                            size: 10,
+                            color: arrival.crowdIsLive ? AppTheme.crowdLow : Colors.grey.shade500,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            arrival.crowdIsLive ? 'Verified Live' : 'Smart Estimate',
+                            style: TextStyle(
+                              fontSize: 10, 
+                              fontWeight: FontWeight.w600,
+                              color: arrival.crowdIsLive ? AppTheme.crowdLow : Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -171,27 +186,37 @@ class ArrivalCard extends StatelessWidget {
               const Divider(height: 1, color: Color(0xFFE2E8F0)),
               const SizedBox(height: 10),
 
-              // Bottom Row: Current Crowd vs Predicted Crowd at Commuter Stop
+              // Bottom Row: Clean Boarding Comfort Reassurance
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
+                      Icon(Icons.event_seat, size: 14, color: Colors.grey.shade600),
+                      const SizedBox(width: 4),
                       Text(
-                        'Current: ',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                      ),
-                      CrowdBadge(crowdLevel: arrival.currentCrowdLevel, isCompact: true),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        'At your stop: ',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                        'Comfort: ',
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
                       ),
                       CrowdBadge(crowdLevel: arrival.predictedCrowdAtStop, isCompact: true),
                     ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.notifications_none, size: 12, color: Colors.grey.shade700),
+                        const SizedBox(width: 3),
+                        Text(
+                          '2m Ping',
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

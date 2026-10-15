@@ -1,4 +1,4 @@
-# Smart Transit Intelligence System — India
+# YatriQ — Autonomous Transit Intelligence
 ### *Authoritative Transit Truth Layer & 3D Transit Corridor Progression Engine*
 
 > **"Know Your Bus Before It Arrives."**
@@ -14,7 +14,7 @@ Commuters across Indian metropolitan and regional bus systems (such as DTC/DIMTS
 3. **Black-Box Data Fabrications**: Traditional tracking apps frequently mix raw GPS pings, stale estimations, and ML forecasts without transparent provenance or confidence indicators.
 4. **Cellular Connectivity Blackspots**: Intermittent 4G/5G cellular coverage along arterial highways and underpasses leads to data dropouts, stalled fleet radars, and missed ETA updates.
 
-The **Smart Transit Intelligence System** solves these challenges by combining:
+**YatriQ** solves these challenges by combining:
 - A single authoritative **Transit Truth Engine** (`services/api/app/services/truth_engine.py`) ensuring transparent data provenance across every coordinate, arrival ETA, and crowd reading.
 - Privacy-preserving **Edge-AI Video Analytics** deployed on physical onboard hardware (CCTV + Edge compute) that analyzes crowd density locally without uploading raw imagery.
 - A **3D Transit Route Progression Engine** that translates complex spatial coordinates into an isometric, train-style rapid transit corridor visualization.

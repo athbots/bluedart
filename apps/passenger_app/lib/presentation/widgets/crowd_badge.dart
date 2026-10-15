@@ -40,6 +40,21 @@ class CrowdBadge extends StatelessWidget {
     }
   }
 
+  String _getHumanLabel() {
+    switch (crowdLevel.toUpperCase()) {
+      case 'LOW':
+        return 'Plenty of Seats';
+      case 'MEDIUM':
+        return 'Seats Filling';
+      case 'HIGH':
+        return 'Few Seats Left';
+      case 'VERY_HIGH':
+        return 'Standing Room';
+      default:
+        return 'Seats Available';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = _getColor();
@@ -61,7 +76,7 @@ class CrowdBadge extends StatelessWidget {
           Icon(icon, size: isCompact ? 14 : 16, color: color),
           const SizedBox(width: 4),
           Text(
-            crowdLevel.replaceAll('_', ' '),
+            _getHumanLabel(),
             style: TextStyle(
               color: color,
               fontSize: isCompact ? 11 : 13,

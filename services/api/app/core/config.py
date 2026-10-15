@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # App
-    PROJECT_NAME: str = "Smart Transit Intelligence System"
+    PROJECT_NAME: str = "YatriQ"
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
     ENVIRONMENT: str = "development"  # "development" or "production"

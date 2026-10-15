@@ -1,20 +1,70 @@
+# Dependencies
 node_modules/
 **/node_modules/
+
+# Flutter & Dart
 .dart_tool/
 **/.dart_tool/
 build/
 **/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# Web Distribution & Cache
 dist/
 **/dist/
+.vite/
+**/.vite/
+
+# Environment Variables & Secrets (Keep .env.example)
 .env
 .env.*
+!.env.example
+
+# Python
 __pycache__/
 **/__pycache__/
-*.pyc
-.pytest_cache/
-**/.pytest_cache/
-.venv/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
 venv/
 **/venv/
+.venv/
+**/.venv/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Coverage
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage/
+
+# Databases & Runtime State (Prevent pushing dynamic runtime buffers)
+edge_buffer_*.db
+*.db-shm
+*.db-wal
+*.db-journal
+
+# Logs
+*.log
+logs/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Files
 .idea/
 .vscode/
+*.swp
+*.swo

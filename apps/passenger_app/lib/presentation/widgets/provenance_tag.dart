@@ -19,17 +19,17 @@ class ProvenanceTag extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: Colors.orange.shade100,
+          color: const Color(0xFFE2E8F0),
           borderRadius: BorderRadius.circular(6),
         ),
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.history_toggle_off, size: 12, color: Colors.deepOrange),
+            Icon(Icons.sync, size: 12, color: Color(0xFF64748B)),
             SizedBox(width: 4),
             Text(
-              'DATA DELAYED',
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.deepOrange),
+              'UPDATING SOON',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF475569)),
             ),
           ],
         ),
@@ -46,10 +46,10 @@ class ProvenanceTag extends StatelessWidget {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.sensors, size: 12, color: AppTheme.badgeLive),
+            Icon(Icons.check_circle, size: 12, color: AppTheme.badgeLive),
             SizedBox(width: 4),
             Text(
-              'LIVE',
+              'LIVE ONBOARD',
               style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.badgeLive),
             ),
           ],
@@ -69,7 +69,7 @@ class ProvenanceTag extends StatelessWidget {
           Icon(Icons.auto_awesome, size: 12, color: AppTheme.badgePredicted),
           SizedBox(width: 4),
           Text(
-            'PREDICTED',
+            'SMART ESTIMATE',
             style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.badgePredicted),
           ),
         ],

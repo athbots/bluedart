@@ -1,7 +1,7 @@
 .PHONY: help install seed train test run dev docker-up docker-down
 
 help:
-	@echo "Smart Transit Intelligence System — CLI Commands"
+	@echo "YatriQ — Autonomous Transit Intelligence — CLI Commands"
 	@echo "  make install     : Install Python and Dashboard dependencies"
 	@echo "  make seed        : Seed the transit database with NCR corridor data"
 	@echo "  make train       : Train ML crowd forecasting and ETA models"
