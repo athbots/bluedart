@@ -549,5 +549,3 @@ def build_yatriq_pptx(output_path="YatriQ_Engineering_Monograph.pptx"):
 
 if __name__ == "__main__":
     build_yatriq_pptx()
-    # Also save to the original path for convenience
-    build_yatriq_pptx("Smart_Transit_Intelligence_Engineering_Monograph.pptx")
